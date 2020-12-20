@@ -1,36 +1,46 @@
 import sys
 
-class Lox:
-    def __init__(self) -> None:
-        # sys.argv[0] is the script name, which we drop.
-        args = sys.argv[1:]
+had_error = False
 
-        if len(args) > 1:
-            print("Usage: plox [script]")
-            sys.exit(64)
+def lox() -> None:
+    # sys.argv[0] is the script name, which we drop.
+    args = sys.argv[1:]
 
-        elif len(args) == 1:
-            self.run_file(args[0])
+    if len(args) > 1:
+        print("Usage: plox [script]")
+        sys.exit(64)
 
+    elif len(args) == 1:
+        run_file(args[0])
+
+    else:
+        run_prompt()
+
+def run_file(path: str) -> None:
+    with open(path) as file:
+        run(file.read())
+        if (had_error): sys.exit(65)
+
+def run_prompt() -> None:
+    while True:
+        try:
+            line = input('> ')
+        except EOFError:
+            print('Received EOF, exiting.')
+            break
         else:
-            self.run_prompt()
+            run(line)
 
-    def run_file(self, path: str) -> None:
-        with open(path) as file:
-            self.run(file.read())
+def run(source: str) -> None:
+    pass
 
-    def run_prompt(self) -> None:
-        while True:
-            try:
-                line = input('> ')
-            except EOFError:
-                print('Received EOF, exiting.')
-                break
-            else:
-                self.run(line)
+def error(line: int, message: str) -> None:
+    report(line, '', message)
 
-    def run(self, source: str) -> None:
-        pass
+def report(line: int, where: str, message: str) -> None:
+    print(f'[line {line}] Error{where}: {message}')
+    global had_error
+    had_error = True
 
 if __name__ == "__main__":
-    Lox()
+    lox()
