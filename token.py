@@ -1,9 +1,9 @@
 from enum import Enum
 
-from typing import Union
+from typing import List, Union
 
 class TokenType(Enum):
-    # Single character tokens.
+    # Single-character tokens.
     LEFT_PAREN = 1
     RIGHT_PAREN = 2
     LEFT_BRACE = 3
@@ -16,7 +16,7 @@ class TokenType(Enum):
     SLASH = 10
     STAR = 11
 
-    # One or two character tokens.
+    # One or two-character tokens.
     BANG = 12
     BANG_EQUAL = 13
     EQUAL = 14
@@ -49,14 +49,16 @@ class TokenType(Enum):
     VAR = 37
     WHILE = 38
 
-    # End of file.
+    # End-of-file.
     EOF = 39
 
+# TODO: Python variable hoisting? Scattering dependent types throughout the
+# source is not ideal.
+
+Literal = Union[float, str, None]
+
 class Token:
-    def __init__(
-        self, type: TokenType, lexeme: str,
-        literal: Union[float, str], line: int
-    ) -> None:
+    def __init__(self, type: TokenType, lexeme: str, literal: Literal, line: int) -> None:
         self.type = type
         self.lexeme = lexeme
         self.literal = literal
@@ -64,3 +66,5 @@ class Token:
 
     def __str__(self) -> str:
         return f'{self.type} {self.lexeme} {self.literal}'
+
+Tokens = List[Token]
