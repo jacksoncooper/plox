@@ -64,7 +64,7 @@ class Token:
         self.literal = literal
         self.line = line
 
-    def __str__(self) -> str:
-        return f'{self.type} {self.lexeme} {self.literal}'
+    def __repr__(self) -> str:
+        return f'Token({self.type}, {self.lexeme}, {self.literal}, {self.line})'
 
 Tokens = List[Token]

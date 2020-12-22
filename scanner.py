@@ -1,6 +1,7 @@
-from token import Token, TokenType
-
 from typing import List
+
+from error import error
+from token import Token, TokenType as Type
 
 from token import Literal, Tokens
 
@@ -24,7 +25,7 @@ class Scanner:
             start = self.current
             self.scan_token()
 
-        self.tokens.append(Token(TokenType.EOF, '', None, self.line))
+        self.tokens.append(Token(Type.EOF, '', None, self.line))
 
         return self.tokens
 
@@ -33,21 +34,38 @@ class Scanner:
 
     def scan_token(self) -> None:
         c = self.advance()
-        if   c == '(': self.add_token(TokenType.LEFT_PAREN)
-        elif c == ')': self.add_token(TokenType.RIGHT_PAREN)
-        elif c == '{': self.add_token(TokenType.LEFT_BRACE)
-        elif c == '}': self.add_token(TokenType.RIGHT_BRACE)
-        elif c == ',': self.add_token(TokenType.COMMA)
-        elif c == '.': self.add_token(TokenType.DOT)
-        elif c == '-': self.add_token(TokenType.MINUS)
-        elif c == '+': self.add_token(TokenType.PLUS)
-        elif c == ';': self.add_token(TokenType.SEMICOLON)
-        elif c == '*': self.add_token(TokenType.STAR)
+
+        # Single-character tokens.
+        if   c == '(': self.add_token(Type.LEFT_PAREN)
+        elif c == ')': self.add_token(Type.RIGHT_PAREN)
+        elif c == '{': self.add_token(Type.LEFT_BRACE)
+        elif c == '}': self.add_token(Type.RIGHT_BRACE)
+        elif c == ',': self.add_token(Type.COMMA)
+        elif c == '.': self.add_token(Type.DOT)
+        elif c == '-': self.add_token(Type.MINUS)
+        elif c == '+': self.add_token(Type.PLUS)
+        elif c == ';': self.add_token(Type.SEMICOLON)
+        elif c == '*': self.add_token(Type.STAR)
+
+        # Two-character tokens.
+        elif c == '!': self.add_token(Type.BANG_EQUAL if self.match('=') else Type.BANG)
+        elif c == '=': self.add_token(Type.EQUAL_EQUAL if self.match('=') else Type.EQUAL)
+        elif c == '<': self.add_token(Type.LESS_EQUAL if self.match('=') else Type.LESS)
+        elif c == '>': self.add_token(Type.GREATER_EQUAL if self.match('=') else Type.GREATER)
+
+        # Character is not in Lox's grammar.
+        else: error(self.line, 'Unexpected character.')
 
     def advance(self) -> str:
         self.current += 1
         return self.source[self.current - 1]
 
-    def add_token(self, type: TokenType, literal: Literal = None) -> None:
+    def add_token(self, type: Type, literal: Literal = None) -> None:
         text = self.source[self.start : self.current]
         self.tokens.append(Token(type, text, literal, self.line))
+
+    def match(self, expected: str) -> bool:
+        if self.is_at_end(): return False
+        if self.source[self.current] != expected: return False
+        self.current += 1
+        return True

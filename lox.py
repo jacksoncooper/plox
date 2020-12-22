@@ -1,6 +1,7 @@
 import sys
 
-had_error = False
+from error import had_error
+from scanner import Scanner
 
 def lox() -> None:
     # sys.argv[0] is the script name, which we drop.
@@ -32,15 +33,11 @@ def run_prompt() -> None:
             run(line)
 
 def run(source: str) -> None:
-    pass
+    scanner = Scanner(source)
+    tokens = scanner.scan_tokens()
 
-def error(line: int, message: str) -> None:
-    report(line, '', message)
-
-def report(line: int, where: str, message: str) -> None:
-    print(f'[line {line}] Error{where}: {message}')
-    global had_error
-    had_error = True
+    for token in tokens:
+        print(token)
 
 if __name__ == "__main__":
     lox()
