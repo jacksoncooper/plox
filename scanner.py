@@ -1,3 +1,4 @@
+import string
 from typing import List
 
 from error import error
@@ -5,18 +6,27 @@ from token import Token, TokenType as Type
 
 from token import Literal, Tokens
 
+def is_digit(char: str) -> bool:
+    return char in string.digits
+
+def is_alpha(char: str) -> bool:
+    return char in string.ascii_letters
+
+def is_alpha_numeric(char: str) -> bool:
+    return is_alpha(char) or is_digit(char)
+
 class Scanner:
     def __init__(self, source: str) -> None:
         self.source = source
 
         self.tokens: Tokens = []
 
-        # 'start' is the index of the first character of the lexeme being
-        # scanned. 'current' is the index of the character being considered.
-        # 'line' is the line number of the character that 'current' points to.
-
+        # The index of the first character of the lexeme being scanned.
         self.start = 0
+
+        # The index of the character being considered.
         self.current = 0
+
         self.line = 1
 
     def scan_tokens(self) -> Tokens:
@@ -48,13 +58,27 @@ class Scanner:
         elif c == '*': self.add_token(Type.STAR)
 
         # Two-character tokens.
-        elif c == '!': self.add_token(Type.BANG_EQUAL if self.match('=') else Type.BANG)
-        elif c == '=': self.add_token(Type.EQUAL_EQUAL if self.match('=') else Type.EQUAL)
-        elif c == '<': self.add_token(Type.LESS_EQUAL if self.match('=') else Type.LESS)
-        elif c == '>': self.add_token(Type.GREATER_EQUAL if self.match('=') else Type.GREATER)
+        elif c == '!': self.add_token_if('=', Type.BANG_EQUAL, Type.BANG)
+        elif c == '=': self.add_token_if('=', Type.EQUAL_EQUAL, Type.EQUAL)
+        elif c == '<': self.add_token_if('=', Type.LESS_EQUAL, Type.LESS)
+        elif c == '>': self.add_token_if('=', Type.GREATER_EQUAL, Type.GREATER)
+
+        # Longer tokens.
+        elif c == '/': self.slash()
+        elif c == '"': self.string()
+
+        # Whitespace.
+        elif c == '\n': self.line += 1
+        elif c in [' ', '\r', '\t']: pass
+
+        # Numbers.
+        elif is_digit(c): self.number()
+
+        # Identifiers.
+        elif is_alpha(c): self.identifier()
 
         # Character is not in Lox's grammar.
-        else: error(self.line, 'Unexpected character.')
+        else: error(self.line, "Unexpected character '{c}'.")
 
     def advance(self) -> str:
         self.current += 1
@@ -69,3 +93,59 @@ class Scanner:
         if self.source[self.current] != expected: return False
         self.current += 1
         return True
+
+    def peek(self) -> str:
+        if self.is_at_end(): return '\0'
+        return self.source[self.current]
+
+    def peek_next(self) -> str:
+        if self.current + 1 >= len(self.source): return '\0'
+        return self.source[self.current + 1]
+
+    def add_token_if(self, char: str, match: Type, no_match: Type) -> None:
+        self.add_token(match if self.match(char) else no_match)
+
+    def slash(self) -> None:
+        if self.match('/'):
+            while self.peek() != '\n' and not self.is_at_end():
+                self.advance()
+        else:
+            self.add_token(Type.SLASH)
+
+    def string(self) -> None:
+        # No escape characters exist in the Lox grammar. Newline characters
+        # are preserved.
+
+        while self.peek() != '"' and not self.is_at_end():
+            if self.peek() == '\n': self.line += 1
+            self.advance()
+
+        if self.is_at_end():
+            error(self.line, 'Unterminated string.')
+
+        # The closing quotation mark.
+        self.advance()
+
+        # Trim the surrounding quotes.
+        self.add_token(
+            Type.STRING,
+            self.source[self.start + 1 : self.current - 1]
+        )
+
+    def number(self) -> None:
+        while is_digit(self.peek()): self.advance()
+
+        # Look for a fractional part.
+        if self.peek() == '.' and is_digit(self.peek_next()):
+            # Consume the dot.
+            self.advance()
+
+            while is_digit(self.peek()): self.advance()
+
+        self.add_token(
+            Type.NUMBER,
+            float(self.source[self.start : self.current])
+        )
+
+    def identifier(self) -> None:
+        pass
