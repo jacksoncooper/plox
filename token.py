@@ -58,13 +58,34 @@ class TokenType(Enum):
 Literal = Union[float, str, None]
 
 class Token:
-    def __init__(self, type: TokenType, lexeme: str, literal: Literal, line: int) -> None:
+    def __init__(
+        self,
+        type: TokenType,
+        lexeme: str,
+        literal: Literal,
+        line: int
+    ) -> None:
         self.type = type
         self.lexeme = lexeme
         self.literal = literal
         self.line = line
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Token): return False
+
+        return all([
+            self.type == other.type,
+            self.lexeme == other.lexeme,
+            self.literal == other.literal,
+            self.line == other.line
+        ])
+
     def __repr__(self) -> str:
-        return f'Token({self.type}, {self.lexeme}, {self.literal}, {self.line})'
+        return (
+            f'Token({self.type}, '
+            f'{self.lexeme.__repr__()}, '
+            f'{self.literal.__repr__()}, '
+            f'{self.line})'
+        )
 
 Tokens = List[Token]

@@ -50,16 +50,13 @@ class Scanner:
 
     def scan_tokens(self) -> Tokens:
         while not self.is_at_end():
-            # We are at the beginning of the next lexeme.
+            # We are at the beginning of a new lexeme.
             self.start = self.current
             self.scan_token()
 
         self.tokens.append(Token(Type.EOF, '', None, self.line))
 
         return self.tokens
-
-    def is_at_end(self) -> bool:
-        return self.current >= len(self.source)
 
     def scan_token(self) -> None:
         c = self.advance()
@@ -99,6 +96,9 @@ class Scanner:
         # Character is not in Lox's grammar.
         else: error(self.line, f"Unexpected character '{c}'.")
 
+    def is_at_end(self) -> bool:
+        return self.current >= len(self.source)
+
     def advance(self) -> str:
         self.current += 1
         return self.source[self.current - 1]
@@ -106,6 +106,9 @@ class Scanner:
     def add_token(self, type: Type, literal: Literal = None) -> None:
         text = self.source[self.start : self.current]
         self.tokens.append(Token(type, text, literal, self.line))
+
+    def add_token_if(self, char: str, match: Type, no_match: Type) -> None:
+        self.add_token(match if self.match(char) else no_match)
 
     def match(self, expected: str) -> bool:
         if self.is_at_end(): return False
@@ -120,9 +123,6 @@ class Scanner:
     def peek_next(self) -> str:
         if self.current + 1 >= len(self.source): return '\0'
         return self.source[self.current + 1]
-
-    def add_token_if(self, char: str, match: Type, no_match: Type) -> None:
-        self.add_token(match if self.match(char) else no_match)
 
     def slash(self) -> None:
         if self.match('/'):
@@ -147,6 +147,7 @@ class Scanner:
 
         # Trim the surrounding quotes.
         value = self.source[self.start + 1 : self.current - 1]
+
         self.add_token(Type.STRING, value)
 
     def number(self) -> None:
@@ -159,8 +160,9 @@ class Scanner:
 
             while is_digit(self.peek()): self.advance()
 
-        # Parse lexeme to float.
+        # Parse captured lexeme to float.
         value = float(self.source[self.start : self.current])
+
         self.add_token(Type.NUMBER, value)
 
     def identifier(self) -> None:
