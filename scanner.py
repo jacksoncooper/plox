@@ -1,10 +1,10 @@
 import string
 from typing import List
 
-from error import error
-from token import Token, TokenType as Type
+from plox.error import error
+from plox.token import Token, TokenType as Type
 
-from token import Literal, Tokens
+from plox.token import Literal, Tokens
 
 def is_digit(char: str) -> bool:
     return char in string.digits

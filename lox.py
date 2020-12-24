@@ -1,7 +1,7 @@
 import sys
 
-from error import had_error
-from scanner import Scanner
+from plox.error import had_error
+from plox.scanner import Scanner
 
 def lox() -> None:
     # sys.argv[0] is the script name, which we drop.
