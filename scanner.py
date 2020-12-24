@@ -10,10 +10,29 @@ def is_digit(char: str) -> bool:
     return char in string.digits
 
 def is_alpha(char: str) -> bool:
-    return char in string.ascii_letters
+    return char in string.ascii_letters + '_'
 
 def is_alpha_numeric(char: str) -> bool:
     return is_alpha(char) or is_digit(char)
+
+keywords = {
+    'and'   : Type.AND,
+    'class' : Type.CLASS,
+    'else'  : Type.ELSE,
+    'false' : Type.FALSE,
+    'for'   : Type.FOR,
+    'fun'   : Type.FUN,
+    'if'    : Type.IF,
+    'nil'   : Type.NIL,
+    'or'    : Type.OR,
+    'print' : Type.PRINT,
+    'return': Type.RETURN,
+    'super' : Type.SUPER,
+    'this'  : Type.THIS,
+    'true'  : Type.TRUE,
+    'var'   : Type.VAR,
+    'while' : Type.WHILE
+}
 
 class Scanner:
     def __init__(self, source: str) -> None:
@@ -32,7 +51,7 @@ class Scanner:
     def scan_tokens(self) -> Tokens:
         while not self.is_at_end():
             # We are at the beginning of the next lexeme.
-            start = self.current
+            self.start = self.current
             self.scan_token()
 
         self.tokens.append(Token(Type.EOF, '', None, self.line))
@@ -78,7 +97,7 @@ class Scanner:
         elif is_alpha(c): self.identifier()
 
         # Character is not in Lox's grammar.
-        else: error(self.line, "Unexpected character '{c}'.")
+        else: error(self.line, f"Unexpected character '{c}'.")
 
     def advance(self) -> str:
         self.current += 1
@@ -127,10 +146,8 @@ class Scanner:
         self.advance()
 
         # Trim the surrounding quotes.
-        self.add_token(
-            Type.STRING,
-            self.source[self.start + 1 : self.current - 1]
-        )
+        value = self.source[self.start + 1 : self.current - 1]
+        self.add_token(Type.STRING, value)
 
     def number(self) -> None:
         while is_digit(self.peek()): self.advance()
@@ -142,10 +159,13 @@ class Scanner:
 
             while is_digit(self.peek()): self.advance()
 
-        self.add_token(
-            Type.NUMBER,
-            float(self.source[self.start : self.current])
-        )
+        # Parse lexeme to float.
+        value = float(self.source[self.start : self.current])
+        self.add_token(Type.NUMBER, value)
 
     def identifier(self) -> None:
-        pass
+        while is_alpha_numeric(self.peek()): self.advance()
+        text = self.source[self.start : self.current]
+        type = keywords.get(text)
+        if type is None: type = Type.IDENTIFIER
+        self.add_token(type)
