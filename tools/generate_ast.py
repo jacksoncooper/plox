@@ -15,16 +15,19 @@ def main() -> None:
     indent = '    '
 
     types = [
-        'Binary   : Expr left, token.Token operator, Expr right',
+        'Binary   : Expr left, Token operator, Expr right',
         'Grouping : Expr expression',
-        'Literal  : token.Literal value',
-        'Unary    : token.Token operator, Expr right'
+        'Literal  : Lit value',
+        'Unary    : Token operator, Expr right'
     ]
 
     with open(output_path, 'w') as file:
-        file.write('from plox import token\n')
+        # Write imports.
+        file.write('from plox.token import Literal as Lit, Token\n')
+        file.write('from plox.visitor import Visitor\n')
         file.write('\n')
 
+        # Write base class definition.
         file.write(f'class {base_name}:\n')
         file.write(f'{indent} pass\n')
         file.write('\n')
@@ -32,33 +35,39 @@ def main() -> None:
         for i in range(len(types)):
             type = types[i]
 
+            # Write class definition header.
             class_name = type.split(':')[0].strip()
             fields = type.split(':')[1].strip().split(', ')
-
             file.write(f'class {class_name}({base_name}):\n')
 
-            file.write(f'{indent}def __init__(\n')
-            file.write(f'{indent}{indent}self,\n')
+            # Write __init__() definition.
+            file.write(f'{indent}def __init__(')
+            file.write(f'self, ')
 
             for j in range(len(fields)):
                 field = fields[j]
-
                 name = field.split(' ')[1]
                 annotation = field.split(' ')[0]
+                file.write(f'{name}: {annotation}')
+                if j < len(fields) - 1: file.write(', ')
 
-                file.write(f'{indent}{indent}{name}: {annotation}')
+            file.write(f') -> None:\n')
 
-                if j < len(fields) - 1: file.write(',')
-
-                file.write('\n')
-
-            file.write(f'{indent}) -> None:\n')
-
+            # Write statements that bind __init__() arguments to class instance.
             for field in fields:
                 name = field.split(' ')[1]
-
                 file.write(f'{indent}{indent}self.{name} = {name}\n')
 
+            file.write('\n')
+
+            # Write accept() definition.
+            file.write(f'{indent}def accept(')
+            file.write(f'self, ')
+            file.write(f'visitor: Visitor')
+            file.write(f') -> None:\n')
+            file.write(f'{indent}{indent}return visitor.visit{class_name}(self)\n')
+
+            # Omit newline after last class definition is written.
             if i < len(types) - 1: file.write('\n')
 
 if __name__ == '__main__':

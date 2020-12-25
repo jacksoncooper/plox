@@ -52,19 +52,12 @@ class TokenType(Enum):
     # End-of-file.
     EOF = 39
 
-# TODO: Python variable hoisting? Scattering dependent types throughout the
-# source is not ideal.
+# TODO: Scattering dependent types throughout the source is not ideal.
 
 Literal = Union[float, str, None]
 
 class Token:
-    def __init__(
-        self,
-        type: TokenType,
-        lexeme: str,
-        literal: Literal,
-        line: int
-    ) -> None:
+    def __init__(self, type: TokenType, lexeme: str, literal: Literal, line: int) -> None:
         self.type = type
         self.lexeme = lexeme
         self.literal = literal
