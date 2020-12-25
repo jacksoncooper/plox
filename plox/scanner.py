@@ -103,13 +103,6 @@ class Scanner:
         self.current += 1
         return self.source[self.current - 1]
 
-    def add_token(self, type: Type, literal: Literal = None) -> None:
-        text = self.source[self.start : self.current]
-        self.tokens.append(Token(type, text, literal, self.line))
-
-    def add_token_if(self, char: str, match: Type, no_match: Type) -> None:
-        self.add_token(match if self.match(char) else no_match)
-
     def match(self, expected: str) -> bool:
         if self.is_at_end(): return False
         if self.source[self.current] != expected: return False
@@ -123,6 +116,13 @@ class Scanner:
     def peek_next(self) -> str:
         if self.current + 1 >= len(self.source): return '\0'
         return self.source[self.current + 1]
+
+    def add_token(self, type: Type, literal: Literal = None) -> None:
+        text = self.source[self.start : self.current]
+        self.tokens.append(Token(type, text, literal, self.line))
+
+    def add_token_if(self, char: str, match: Type, no_match: Type) -> None:
+        self.add_token(match if self.match(char) else no_match)
 
     def slash(self) -> None:
         if self.match('/'):

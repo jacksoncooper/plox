@@ -8,7 +8,7 @@ def lox() -> None:
     args = sys.argv[1:]
 
     if len(args) > 1:
-        print("Usage: plox [script]")
+        print('Usage: plox [script]')
         sys.exit(64)
 
     elif len(args) == 1:
@@ -39,5 +39,5 @@ def run(source: str) -> None:
     for token in tokens:
         print(token)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     lox()
