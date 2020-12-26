@@ -40,15 +40,3 @@ class AstPrinter(Visitor):
         readable += ')'
 
         return readable
-
-if __name__ == "__main__":
-    expression = Binary(
-        Unary(Token(Type.MINUS, '-', None, 1), Literal(123)),
-        Token(Type.STAR, '*', None, 1),
-        Grouping(Literal(45.67))
-    )
-
-    ast_printer = AstPrinter()
-
-    # No type error because object is a subtype of Any.
-    print(ast_printer.print(expression))

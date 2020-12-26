@@ -1,4 +1,4 @@
-import unittest
+from unittest import TestCase, main
 
 from plox.scanner import Scanner
 from plox.token import Token, TokenType as Type
@@ -15,7 +15,7 @@ while (remaining >= 1) {
 }\
 '''
 
-class TestScannerState(unittest.TestCase):
+class TestScannerState(TestCase):
     def test_initial_state(self) -> None:
         scanner = Scanner('')
 
@@ -66,7 +66,7 @@ class TestScannerState(unittest.TestCase):
         self.assertEqual(scanner.peek(), '\0')
         self.assertEqual(scanner.current, 3)
 
-class TestScanning(unittest.TestCase):
+class TestScanning(TestCase):
     def test_example_one(self) -> None:
         scanner = Scanner(example_one)
 
@@ -106,4 +106,4 @@ class TestScanning(unittest.TestCase):
         self.assertEqual(tokens, expected)
 
 if __name__ == '__main__':
-    unittest.main()
+    main()

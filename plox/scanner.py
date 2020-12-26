@@ -2,9 +2,7 @@ import string
 from typing import List
 
 from plox.error import error
-from plox.token import Token, TokenType as Type
-
-from plox.token import Literal, Tokens
+from plox.token import Literal, Token, TokenType as Type, Tokens
 
 def is_digit(char: str) -> bool:
     return char in string.digits
