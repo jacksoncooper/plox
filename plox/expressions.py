@@ -5,19 +5,19 @@ from plox.token import Literal as Lit, Token
 
 class Visitor(ABC):
     @abstractmethod
-    def visitBinary(self, binary: 'Binary') -> Any:
+    def visitBinary(self, expr: 'Binary') -> Any:
         pass
 
     @abstractmethod
-    def visitGrouping(self, grouping: 'Grouping') -> Any:
+    def visitGrouping(self, expr: 'Grouping') -> Any:
         pass
 
     @abstractmethod
-    def visitLiteral(self, literal: 'Literal') -> Any:
+    def visitLiteral(self, expr: 'Literal') -> Any:
         pass
 
     @abstractmethod
-    def visitUnary(self, unary: 'Unary') -> Any:
+    def visitUnary(self, expr: 'Unary') -> Any:
         pass
 
 class Expr(ABC):

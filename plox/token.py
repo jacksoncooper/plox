@@ -52,8 +52,6 @@ class TokenType(Enum):
     # End-of-file.
     EOF = 39
 
-# TODO: Scattering dependent types throughout the source is not ideal.
-
 Literal = Union[float, str, None]
 
 class Token:

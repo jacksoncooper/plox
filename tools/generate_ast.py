@@ -1,5 +1,7 @@
 import sys
 
+# TODO: This is horrific and you need to refactor.
+
 def main() -> None:
     # sys.argv[0] is the script name, which we drop.
     args = sys.argv[1:]
@@ -11,6 +13,7 @@ def main() -> None:
     module_name = 'expressions'
     output_directory = args[0]
     output_path = f'{output_directory}/{module_name}.py'
+    base_name = 'Expr'
     indent = ' ' * 4
 
     types = [
@@ -35,7 +38,7 @@ def main() -> None:
             type = types[i]
             class_name = type.split(':')[0].strip()
             file.write(f'{indent}@abstractmethod\n')
-            expression = f"{class_name.lower()}: '{class_name}'"
+            expression = f"{base_name.lower()}: '{class_name}'"
             file.write(f'{indent}def visit{class_name}(self, {expression}) -> Any:\n')
             file.write(f'{indent}{indent}pass\n')
             if i < len(types) - 1: file.write('\n')
@@ -56,7 +59,7 @@ def main() -> None:
             # Write class definition header.
             class_name = type.split(':')[0].strip()
             parameters = type.split(':')[1].strip().split(', ')
-            file.write(f'class {class_name}(Expr):\n')
+            file.write(f'class {class_name}({base_name}):\n')
 
             # Write __init__() definition.
             file.write(f'{indent}def __init__(')
