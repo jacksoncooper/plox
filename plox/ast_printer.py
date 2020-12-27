@@ -1,7 +1,13 @@
-from typing import Any, Tuple
+from typing import Any
 
-from plox.expressions import *
-from plox.token import Token, TokenType as Type
+from plox.expressions import (
+    Binary,
+    Expr,
+    Grouping,
+    Literal,
+    Unary,
+    Visitor
+)
 
 # The overridden visit methods of AstPrinter return a string. Visitors are free
 # to return whatever they'd like. Because the accept method of an expression

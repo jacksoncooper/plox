@@ -1,14 +1,24 @@
 from unittest import TestCase, main
 
 from plox.ast_printer import AstPrinter
-from plox.expressions import *
-from plox.token import Token, TokenType as Type
+
+from plox.expressions import (
+    Binary,
+    Grouping,
+    Literal,
+    Unary
+)
+
+from plox.token import (
+    Token,
+    TokenType
+)
 
 class TestPrinting(TestCase):
     def test_binary_expression(self) -> None:
         expression = Binary(
-            Unary(Token(Type.MINUS, '-', None, 1), Literal(123)),
-            Token(Type.STAR, '*', None, 1),
+            Unary(Token(TokenType.MINUS, '-', None, 1), Literal(123)),
+            Token(TokenType.STAR, '*', None, 1),
             Grouping(Literal(45.67))
         )
 

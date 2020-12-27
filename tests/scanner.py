@@ -1,7 +1,11 @@
 from unittest import TestCase, main
 
 from plox.scanner import Scanner
-from plox.token import Token, TokenType as Type
+
+from plox.token import (
+    Token,
+    TokenType as Type
+)
 
 example_one = '''\
 // Please do not mutate the biscotti.
