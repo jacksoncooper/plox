@@ -1,7 +1,7 @@
 import string
 from typing import List
 
-from plox.error import error
+import plox.lox as lox
 
 from plox.token import (
     Literal,
@@ -98,7 +98,7 @@ class Scanner:
         elif is_alpha(c): self.identifier()
 
         # Character is not in Lox's grammar.
-        else: error(self.line, f"Unexpected character '{c}'.")
+        else: lox.error(self.line, f"Unexpected character '{c}'.")
 
     def is_at_end(self) -> bool:
         return self.current >= len(self.source)
@@ -144,7 +144,7 @@ class Scanner:
             self.advance()
 
         if self.is_at_end():
-            error(self.line, 'Unterminated string.')
+            lox.error(self.line, 'Unterminated string.')
 
         # The closing quotation mark.
         self.advance()

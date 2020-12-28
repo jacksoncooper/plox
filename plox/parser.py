@@ -1,3 +1,5 @@
+from typing import Optional
+
 from plox.expressions import (
     Binary,
     Expr,
@@ -6,16 +8,31 @@ from plox.expressions import (
     Unary
 )
 
+import plox.lox as lox
+
 from plox.token import (
     Token,
     TokenType as TT,
     Tokens
 )
 
+class ParseError(Exception):
+    pass
+
+def error(token: Token, message: str) -> ParseError:
+    lox.parse_error(token, message)
+    return ParseError()
+
 class Parser:
     def __init__(self, tokens: Tokens) -> None:
         self.current = 0
         self.tokens = tokens
+
+    def parse(self) -> Optional[Expr]:
+        try:
+            return self.expression()
+        except ParseError:
+            return None
 
     def expression(self) -> Expr:
         return self.equality()
@@ -81,11 +98,24 @@ class Parser:
             self.consume(TT.RIGHT_PAREN, "Expect ')' after expression.")
             return Grouping(expr)
 
-        # TODO: primary() is partial because we haven't exhausted our alphabet
-        # of possible tokens. If we get to this point, the program contains a
-        # syntax error.
+        raise error(self.peek(), 'Expect expression.')
 
-        raise NotImplementedError('We still need syntax error reporting.')
+    def is_at_end(self) -> bool:
+        return self.peek().type == TT.EOF
+
+    def advance(self) -> Token:
+        if not self.is_at_end(): self.current += 1
+        return self.previous()
+
+    def peek(self) -> Token:
+        return self.tokens[self.current]
+
+    def previous(self) -> Token:
+        return self.tokens[self.current - 1]
+
+    def check(self, type: TT) -> bool:
+        if self.is_at_end(): return False
+        return self.peek().type == type
 
     def match(self, *types: TT) -> bool:
         for type in types:
@@ -95,19 +125,29 @@ class Parser:
 
         return False
 
-    def check(self, type: TT) -> bool:
-        if self.is_at_end(): return False
-        return self.peek().type == type
+    def consume(self, type: TT, message: str) -> Token:
+        if self.check(type): return self.advance()
+        raise error(self.peek(), message)
 
-    def advance(self) -> Token:
-        if not self.is_at_end(): self.current += 1
-        return self.previous()
+    def synchronize(self) -> None:
+        # We call synchronize() when the parser enters panic mode. We consumed
+        # an unexpected token and exploded the call stack. Now we seek out the
+        # start of a new statement, discarding the tokens that precede it, in an
+        # effort to avoid cascade errors, because we consider the current
+        # expression to be hosed.
 
-    def is_at_end(self) -> bool:
-        return self.peek().type == TT.EOF
+        self.advance()
 
-    def peek(self) -> Token:
-        return self.tokens[self.current]
+        while not self.is_at_end():
+            if self.previous().type == TT.SEMICOLON: return
 
-    def previous(self) -> Token:
-        return self.tokens[self.current - 1]
+            current = self.peek().type
+
+            statements = [
+                TT.CLASS, TT.FUN, TT.VAR, TT.FOR,
+                TT.IF, TT.WHILE, TT.PRINT, TT.RETURN
+            ]
+
+            if current in statements: return
+
+            self.advance()
