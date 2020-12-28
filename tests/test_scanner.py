@@ -7,7 +7,7 @@ from plox.token import (
     TokenType as TT
 )
 
-example_one = '''\
+multiple_lines = '''\
 // Please do not mutate the biscotti.
 
 var biscotti = "hazelnut";
@@ -19,7 +19,7 @@ while (remaining >= 1) {
 }\
 '''
 
-class TestScannerState(TestCase):
+class TestState(TestCase):
     def test_initial_state(self) -> None:
         scanner = Scanner('')
 
@@ -70,10 +70,28 @@ class TestScannerState(TestCase):
         self.assertEqual(scanner.peek(), '\0')
         self.assertEqual(scanner.current, 3)
 
-class TestScanning(TestCase):
-    def test_example_one(self) -> None:
-        scanner = Scanner(example_one)
+class TestError(TestCase):
+    def test_unexpected_character(self) -> None:
+        scanner = Scanner('bis@cotti')
+        tokens = scanner.scan_tokens()
 
+        expected = [
+            Token(TT.IDENTIFIER, 'bis', None, 1),
+            Token(TT.IDENTIFIER, 'cotti', None, 1),
+            Token(TT.EOF, '', None, 1)
+        ]
+
+        self.assertEqual(tokens, expected)
+
+    def test_unterminated_string(self) -> None:
+        scanner = Scanner('"biscotti')
+        tokens = scanner.scan_tokens()
+        expected = [Token(TT.EOF, '', None, 1)]
+        self.assertEqual(tokens, expected)
+
+class TestTokens(TestCase):
+    def test_multiple_lines(self) -> None:
+        scanner = Scanner(multiple_lines)
         tokens = scanner.scan_tokens()
 
         expected = [

@@ -145,6 +145,7 @@ class Scanner:
 
         if self.is_at_end():
             lox.error(self.line, 'Unterminated string.')
+            return
 
         # The closing quotation mark.
         self.advance()
