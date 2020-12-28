@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from plox.token import Literal as Lit, Token
+import plox.token as token
 
 class Visitor(ABC):
     @abstractmethod
@@ -26,7 +26,7 @@ class Expr(ABC):
         pass
 
 class Binary(Expr):
-    def __init__(self, left: Expr, operator: Token, right: Expr) -> None:
+    def __init__(self, left: Expr, operator: token.Token, right: Expr) -> None:
         self.left = left
         self.operator = operator
         self.right = right
@@ -42,14 +42,14 @@ class Grouping(Expr):
         return visitor.visitGrouping(self)
 
 class Literal(Expr):
-    def __init__(self, value: Lit) -> None:
+    def __init__(self, value: token.Literal) -> None:
         self.value = value
 
     def accept(self, visitor: Visitor) -> Any:
         return visitor.visitLiteral(self)
 
 class Unary(Expr):
-    def __init__(self, operator: Token, right: Expr) -> None:
+    def __init__(self, operator: token.Token, right: Expr) -> None:
         self.operator = operator
         self.right = right
 

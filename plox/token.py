@@ -52,7 +52,7 @@ class TokenType(Enum):
     # End-of-file.
     EOF = 39
 
-Literal = Union[float, str, None]
+Literal = Union[bool, float, str, None]
 
 class Token:
     def __init__(self, type: TokenType, lexeme: str, literal: Literal, line: int) -> None:

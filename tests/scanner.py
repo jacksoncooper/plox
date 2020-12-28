@@ -4,7 +4,7 @@ from plox.scanner import Scanner
 
 from plox.token import (
     Token,
-    TokenType as Type
+    TokenType as TT
 )
 
 example_one = '''\
@@ -77,34 +77,34 @@ class TestScanning(TestCase):
         tokens = scanner.scan_tokens()
 
         expected = [
-            Token(Type.VAR, 'var', None, 3),
-            Token(Type.IDENTIFIER, 'biscotti', None, 3),
-            Token(Type.EQUAL, '=', None, 3),
-            Token(Type.STRING, '"hazelnut"', 'hazelnut', 3),
-            Token(Type.SEMICOLON, ';', None, 3),
-            Token(Type.VAR, 'var', None, 4),
-            Token(Type.IDENTIFIER, 'remaining', None, 4),
-            Token(Type.EQUAL, '=', None, 4),
-            Token(Type.NUMBER, '3', 3, 4),
-            Token(Type.SEMICOLON, ';', None, 4),
-            Token(Type.WHILE, 'while', None, 6),
-            Token(Type.LEFT_PAREN, '(', None, 6),
-            Token(Type.IDENTIFIER, 'remaining', None, 6),
-            Token(Type.GREATER_EQUAL, '>=', None, 6),
-            Token(Type.NUMBER, '1', 1, 6),
-            Token(Type.RIGHT_PAREN, ')', None, 6),
-            Token(Type.LEFT_BRACE, '{', None, 6),
-            Token(Type.PRINT, 'print', None, 7),
-            Token(Type.STRING, '"*munch*"', '*munch*', 7),
-            Token(Type.SEMICOLON, ';', None, 7),
-            Token(Type.IDENTIFIER, 'remaining', None, 8),
-            Token(Type.EQUAL, '=', None, 8),
-            Token(Type.IDENTIFIER, 'remaining', None, 8),
-            Token(Type.SLASH, '/', None, 8),
-            Token(Type.NUMBER, '2', 2, 8),
-            Token(Type.SEMICOLON, ';', None, 8),
-            Token(Type.RIGHT_BRACE, '}', None, 9),
-            Token(Type.EOF, '', None, 9)
+            Token(TT.VAR, 'var', None, 3),
+            Token(TT.IDENTIFIER, 'biscotti', None, 3),
+            Token(TT.EQUAL, '=', None, 3),
+            Token(TT.STRING, '"hazelnut"', 'hazelnut', 3),
+            Token(TT.SEMICOLON, ';', None, 3),
+            Token(TT.VAR, 'var', None, 4),
+            Token(TT.IDENTIFIER, 'remaining', None, 4),
+            Token(TT.EQUAL, '=', None, 4),
+            Token(TT.NUMBER, '3', 3, 4),
+            Token(TT.SEMICOLON, ';', None, 4),
+            Token(TT.WHILE, 'while', None, 6),
+            Token(TT.LEFT_PAREN, '(', None, 6),
+            Token(TT.IDENTIFIER, 'remaining', None, 6),
+            Token(TT.GREATER_EQUAL, '>=', None, 6),
+            Token(TT.NUMBER, '1', 1, 6),
+            Token(TT.RIGHT_PAREN, ')', None, 6),
+            Token(TT.LEFT_BRACE, '{', None, 6),
+            Token(TT.PRINT, 'print', None, 7),
+            Token(TT.STRING, '"*munch*"', '*munch*', 7),
+            Token(TT.SEMICOLON, ';', None, 7),
+            Token(TT.IDENTIFIER, 'remaining', None, 8),
+            Token(TT.EQUAL, '=', None, 8),
+            Token(TT.IDENTIFIER, 'remaining', None, 8),
+            Token(TT.SLASH, '/', None, 8),
+            Token(TT.NUMBER, '2', 2, 8),
+            Token(TT.SEMICOLON, ';', None, 8),
+            Token(TT.RIGHT_BRACE, '}', None, 9),
+            Token(TT.EOF, '', None, 9)
         ]
 
         self.assertEqual(tokens, expected)

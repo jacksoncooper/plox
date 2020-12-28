@@ -17,10 +17,10 @@ def main() -> None:
     indent = ' ' * 4
 
     types = [
-        'Binary   : Expr left, Token operator, Expr right',
+        'Binary   : Expr left, token.Token operator, Expr right',
         'Grouping : Expr expression',
-        'Literal  : Lit value',
-        'Unary    : Token operator, Expr right'
+        'Literal  : token.Literal value',
+        'Unary    : token.Token operator, Expr right'
     ]
 
     with open(output_path, 'w') as file:
@@ -28,7 +28,7 @@ def main() -> None:
         file.write('from abc import ABC, abstractmethod\n')
         file.write('from typing import Any\n')
         file.write('\n')
-        file.write('from plox.token import Literal as Lit, Token\n')
+        file.write('import plox.token as token\n')
         file.write('\n')
 
         # Write visitor class definition.

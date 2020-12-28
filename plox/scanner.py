@@ -6,7 +6,7 @@ from plox.error import error
 from plox.token import (
     Literal,
     Token,
-    TokenType as Type,
+    TokenType as TT,
     Tokens
 )
 
@@ -20,22 +20,22 @@ def is_alpha_numeric(char: str) -> bool:
     return is_alpha(char) or is_digit(char)
 
 keywords = {
-    'and'   : Type.AND,
-    'class' : Type.CLASS,
-    'else'  : Type.ELSE,
-    'false' : Type.FALSE,
-    'for'   : Type.FOR,
-    'fun'   : Type.FUN,
-    'if'    : Type.IF,
-    'nil'   : Type.NIL,
-    'or'    : Type.OR,
-    'print' : Type.PRINT,
-    'return': Type.RETURN,
-    'super' : Type.SUPER,
-    'this'  : Type.THIS,
-    'true'  : Type.TRUE,
-    'var'   : Type.VAR,
-    'while' : Type.WHILE
+    'and'   : TT.AND,
+    'class' : TT.CLASS,
+    'else'  : TT.ELSE,
+    'false' : TT.FALSE,
+    'for'   : TT.FOR,
+    'fun'   : TT.FUN,
+    'if'    : TT.IF,
+    'nil'   : TT.NIL,
+    'or'    : TT.OR,
+    'print' : TT.PRINT,
+    'return': TT.RETURN,
+    'super' : TT.SUPER,
+    'this'  : TT.THIS,
+    'true'  : TT.TRUE,
+    'var'   : TT.VAR,
+    'while' : TT.WHILE
 }
 
 class Scanner:
@@ -58,7 +58,7 @@ class Scanner:
             self.start = self.current
             self.scan_token()
 
-        self.tokens.append(Token(Type.EOF, '', None, self.line))
+        self.tokens.append(Token(TT.EOF, '', None, self.line))
 
         return self.tokens
 
@@ -66,22 +66,22 @@ class Scanner:
         c = self.advance()
 
         # Single-character tokens.
-        if   c == '(': self.add_token(Type.LEFT_PAREN)
-        elif c == ')': self.add_token(Type.RIGHT_PAREN)
-        elif c == '{': self.add_token(Type.LEFT_BRACE)
-        elif c == '}': self.add_token(Type.RIGHT_BRACE)
-        elif c == ',': self.add_token(Type.COMMA)
-        elif c == '.': self.add_token(Type.DOT)
-        elif c == '-': self.add_token(Type.MINUS)
-        elif c == '+': self.add_token(Type.PLUS)
-        elif c == ';': self.add_token(Type.SEMICOLON)
-        elif c == '*': self.add_token(Type.STAR)
+        if   c == '(': self.add_token(TT.LEFT_PAREN)
+        elif c == ')': self.add_token(TT.RIGHT_PAREN)
+        elif c == '{': self.add_token(TT.LEFT_BRACE)
+        elif c == '}': self.add_token(TT.RIGHT_BRACE)
+        elif c == ',': self.add_token(TT.COMMA)
+        elif c == '.': self.add_token(TT.DOT)
+        elif c == '-': self.add_token(TT.MINUS)
+        elif c == '+': self.add_token(TT.PLUS)
+        elif c == ';': self.add_token(TT.SEMICOLON)
+        elif c == '*': self.add_token(TT.STAR)
 
         # Two-character tokens.
-        elif c == '!': self.add_token_if('=', Type.BANG_EQUAL, Type.BANG)
-        elif c == '=': self.add_token_if('=', Type.EQUAL_EQUAL, Type.EQUAL)
-        elif c == '<': self.add_token_if('=', Type.LESS_EQUAL, Type.LESS)
-        elif c == '>': self.add_token_if('=', Type.GREATER_EQUAL, Type.GREATER)
+        elif c == '!': self.add_token_if('=', TT.BANG_EQUAL, TT.BANG)
+        elif c == '=': self.add_token_if('=', TT.EQUAL_EQUAL, TT.EQUAL)
+        elif c == '<': self.add_token_if('=', TT.LESS_EQUAL, TT.LESS)
+        elif c == '>': self.add_token_if('=', TT.GREATER_EQUAL, TT.GREATER)
 
         # Longer tokens.
         elif c == '/': self.slash()
@@ -121,11 +121,11 @@ class Scanner:
         if self.current + 1 >= len(self.source): return '\0'
         return self.source[self.current + 1]
 
-    def add_token(self, type: Type, literal: Literal = None) -> None:
+    def add_token(self, type: TT, literal: Literal = None) -> None:
         text = self.source[self.start : self.current]
         self.tokens.append(Token(type, text, literal, self.line))
 
-    def add_token_if(self, char: str, match: Type, no_match: Type) -> None:
+    def add_token_if(self, char: str, match: TT, no_match: TT) -> None:
         self.add_token(match if self.match(char) else no_match)
 
     def slash(self) -> None:
@@ -133,7 +133,7 @@ class Scanner:
             while self.peek() != '\n' and not self.is_at_end():
                 self.advance()
         else:
-            self.add_token(Type.SLASH)
+            self.add_token(TT.SLASH)
 
     def string(self) -> None:
         # No escape characters exist in the Lox grammar. Newline characters
@@ -152,7 +152,7 @@ class Scanner:
         # Trim the surrounding quotes.
         value = self.source[self.start + 1 : self.current - 1]
 
-        self.add_token(Type.STRING, value)
+        self.add_token(TT.STRING, value)
 
     def number(self) -> None:
         while is_digit(self.peek()): self.advance()
@@ -167,11 +167,11 @@ class Scanner:
         # Parse captured lexeme to float.
         value = float(self.source[self.start : self.current])
 
-        self.add_token(Type.NUMBER, value)
+        self.add_token(TT.NUMBER, value)
 
     def identifier(self) -> None:
         while is_alpha_numeric(self.peek()): self.advance()
         text = self.source[self.start : self.current]
         type = keywords.get(text)
-        if type is None: type = Type.IDENTIFIER
+        if type is None: type = TT.IDENTIFIER
         self.add_token(type)

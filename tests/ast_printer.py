@@ -11,14 +11,14 @@ from plox.expressions import (
 
 from plox.token import (
     Token,
-    TokenType
+    TokenType as TT
 )
 
 class TestPrinting(TestCase):
     def test_binary_expression(self) -> None:
         expression = Binary(
-            Unary(Token(TokenType.MINUS, '-', None, 1), Literal(123)),
-            Token(TokenType.STAR, '*', None, 1),
+            Unary(Token(TT.MINUS, '-', None, 1), Literal(123)),
+            Token(TT.STAR, '*', None, 1),
             Grouping(Literal(45.67))
         )
 
