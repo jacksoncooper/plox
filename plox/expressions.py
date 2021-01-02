@@ -32,21 +32,44 @@ class Binary(Expr):
         self.right = right
 
     def accept(self, visitor: Visitor) -> Any:
-        return visitor.visitBinary(self)
+         return visitor.visitBinary(self)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Binary): return False
+
+        return all([
+            self.left == other.left,
+            self.operator == other.operator,
+            self.right == other.right
+        ])
 
 class Grouping(Expr):
-    def __init__(self, expression: Expr) -> None:
-        self.expression = expression
+    def __init__(self, expr: Expr) -> None:
+        self.expr = expr
 
     def accept(self, visitor: Visitor) -> Any:
-        return visitor.visitGrouping(self)
+         return visitor.visitGrouping(self)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Grouping): return False
+
+        return all([
+            self.expr == other.expr
+        ])
 
 class Literal(Expr):
     def __init__(self, value: token.Literal) -> None:
         self.value = value
 
     def accept(self, visitor: Visitor) -> Any:
-        return visitor.visitLiteral(self)
+         return visitor.visitLiteral(self)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Literal): return False
+
+        return all([
+            self.value == other.value
+        ])
 
 class Unary(Expr):
     def __init__(self, operator: token.Token, right: Expr) -> None:
@@ -54,4 +77,12 @@ class Unary(Expr):
         self.right = right
 
     def accept(self, visitor: Visitor) -> Any:
-        return visitor.visitUnary(self)
+         return visitor.visitUnary(self)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Unary): return False
+
+        return all([
+            self.operator == other.operator,
+            self.right == other.right
+        ])

@@ -107,12 +107,6 @@ class Scanner:
         self.current += 1
         return self.source[self.current - 1]
 
-    def match(self, expected: str) -> bool:
-        if self.is_at_end(): return False
-        if self.source[self.current] != expected: return False
-        self.current += 1
-        return True
-
     def peek(self) -> str:
         if self.is_at_end(): return '\0'
         return self.source[self.current]
@@ -120,6 +114,12 @@ class Scanner:
     def peek_next(self) -> str:
         if self.current + 1 >= len(self.source): return '\0'
         return self.source[self.current + 1]
+
+    def match(self, expected: str) -> bool:
+        if self.is_at_end(): return False
+        if self.source[self.current] != expected: return False
+        self.current += 1
+        return True
 
     def add_token(self, type: TT, literal: Literal = None) -> None:
         text = self.source[self.start : self.current]
@@ -165,7 +165,6 @@ class Scanner:
 
             while is_digit(self.peek()): self.advance()
 
-        # Parse captured lexeme to float.
         value = float(self.source[self.start : self.current])
 
         self.add_token(TT.NUMBER, value)
