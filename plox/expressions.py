@@ -5,19 +5,19 @@ import plox.token as token
 
 class Visitor(ABC):
     @abstractmethod
-    def visitBinary(self, expr: 'Binary') -> Any:
+    def visit_binary(self, expr: 'Binary') -> Any:
         pass
 
     @abstractmethod
-    def visitGrouping(self, expr: 'Grouping') -> Any:
+    def visit_grouping(self, expr: 'Grouping') -> Any:
         pass
 
     @abstractmethod
-    def visitLiteral(self, expr: 'Literal') -> Any:
+    def visit_literal(self, expr: 'Literal') -> Any:
         pass
 
     @abstractmethod
-    def visitUnary(self, expr: 'Unary') -> Any:
+    def visit_unary(self, expr: 'Unary') -> Any:
         pass
 
 class Expr(ABC):
@@ -32,7 +32,7 @@ class Binary(Expr):
         self.right = right
 
     def accept(self, visitor: Visitor) -> Any:
-         return visitor.visitBinary(self)
+         return visitor.visit_binary(self)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Binary): return False
@@ -48,7 +48,7 @@ class Grouping(Expr):
         self.expr = expr
 
     def accept(self, visitor: Visitor) -> Any:
-         return visitor.visitGrouping(self)
+         return visitor.visit_grouping(self)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Grouping): return False
@@ -62,7 +62,7 @@ class Literal(Expr):
         self.value = value
 
     def accept(self, visitor: Visitor) -> Any:
-         return visitor.visitLiteral(self)
+         return visitor.visit_literal(self)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Literal): return False
@@ -77,7 +77,7 @@ class Unary(Expr):
         self.right = right
 
     def accept(self, visitor: Visitor) -> Any:
-         return visitor.visitUnary(self)
+         return visitor.visit_unary(self)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Unary): return False

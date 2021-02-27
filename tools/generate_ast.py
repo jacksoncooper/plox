@@ -2,8 +2,7 @@ import sys
 
 from typing import Dict, List, Tuple
 
-Attribute = Tuple[str, str]
-Attributes = List[Attribute]
+Attributes = List[Tuple[str, str]]
 Expressions = Dict[str, Attributes]
 
 module_name = 'expressions'
@@ -62,7 +61,7 @@ def write_visitor_base(lines: List[str], names: List[str]) -> None:
     for name in names:
         lines.extend([
             f'{indent}@abstractmethod\n',
-            f"{indent}def visit{name}(self, {base_name.lower()}: '{name}') -> Any:\n",
+            f"{indent}def visit_{name.lower()}(self, {base_name.lower()}: '{name}') -> Any:\n",
             f'{indent}{indent}pass\n',
             '\n'
         ])
@@ -103,7 +102,7 @@ def write_expression(lines: List[str], name: str, attributes: Attributes) -> Non
     # Write accept().
     lines.extend([
         f'{indent}def accept(self, visitor: Visitor) -> Any:\n',
-        f'{indent}{indent} return visitor.visit{name}(self)\n',
+        f'{indent}{indent} return visitor.visit_{name.lower()}(self)\n',
         '\n'
     ])
 
