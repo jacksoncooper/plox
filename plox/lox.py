@@ -1,3 +1,4 @@
+import builtins
 import sys
 
 # TODO: We don't import Scanner directly because it causes a circular import
@@ -10,6 +11,11 @@ import plox.scanner
 import plox.token
 
 had_error = False
+
+class RuntimeError(builtins.RuntimeError):
+    def __init__(self, token: plox.token.Token, message: str):
+        self.token = token
+        self.message = message
 
 def lox() -> None:
     # sys.argv[0] is the script name, which we drop.

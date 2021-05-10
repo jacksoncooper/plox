@@ -9,22 +9,59 @@ from plox.expressions import (
     Visitor
 )
 
+import plox.lox as lox
 import plox.token as token
-from plox.token import TokenType as TT
+from plox.token import Token, TokenType as TT
+
+def interpret(expression: Expr) -> None:
+    try:
+        value = evaluate(expression)
+        print(stringify(value))
+    except lox.RuntimeError as error:
+        lox.runtimeError(error)
+
+def stringify(object: Any) -> str:
+    if object is None: return 'nil'
+
+    if isinstance(object, float):
+        text = str(object)
+        if text.endswith('.0'):
+            text = text[:-2]
+        return text
+
+    if isinstance(object, bool):
+        if object is True:
+            return "true"
+        return "false"
+
+    return str(object)
 
 def is_truthy(value: token.Literal) -> bool:
+    # Lox follows Ruby’s simple rule: false and nil are falsey, and everything
+    # else is truthy.
     if value is None: return False
-    if isinstance(value, bool): return value
+    if value is False: return False
     return True
+
+def is_equal(value: token.Literal, another_value: token.Literal) -> bool:
+    # From https://docs.python.org/3/library/stdtypes.html.
+    # - Objects of different types, except different numeric types, never compare equal.
+    # - Floating point numbers are usually implemented using double in C.
+    return value == another_value
+
+def check_number_operand(operator: Token, operand: Any) -> None:
+    if isinstance(operand, float): return
+    raise lox.RuntimeError(operator, 'Operand must be a number.')
+
+def check_number_operands(operator: Token, left: Any, right: Any) -> None:
+    if isinstance(left, float) and isinstance(right, float): return
+    raise lox.RuntimeError(operator, 'Operands must be numbers.')
 
 class Interpreter(Visitor):
     # The evaluate function returns a token.Literal when we visit a unary
-    # expression, and then we start smushing them together in an unsafe
-    # manner because I haven't figured out how to handle the visitor pattern
-    # in Python.
-
-    # If we try to evaluate "hello" * "world" Python with balk with a
-    # TypeError.
+    # expression, and then we start smushing them together in an unsafe manner.
+    # token.Literal is a sum type, but I don't have any value-level pattern
+    # matching abilities, so we proceed with unsafe smushing and isinstance().
 
     def visit_binary(self, expr: Binary) -> Any:
         left = self.evaluate(expr.left)
@@ -33,24 +70,29 @@ class Interpreter(Visitor):
         token_type = expr.operator.type
 
         if token_type == TT.BANG_EQUAL:
-            return left == right
+            return not is_equal(left, right)
 
         if token_type == TT.EQUAL_EQUAL:
-            return left != right
+            return is_equal(left, right)
 
         if token_type == TT.GREATER:
+            check_number_operands(expr.operator, left, right)
             return left > right
 
         if token_type == TT.GREATER_EQUAL:
+            check_number_operands(expr.operator, left, right)
             return left >= right
 
         if token_type == TT.LESS:
+            check_number_operands(expr.operator, left, right)
             return left < right
 
         if token_type == TT.LESS_EQUAL:
+            check_number_operands(expr.operator, left, right)
             return left <= right
 
         if token_type == TT.MINUS:
+            check_number_operands(expr.operator, left, right)
             return left - right
 
         if token_type == TT.PLUS:
@@ -60,10 +102,17 @@ class Interpreter(Visitor):
             if are_numbers or are_strings:
                 return left + right
 
+            raise lox.RuntimeError(
+                expr.operator,
+                'Operands must be two numbers or two strings.'
+            )
+
         if token_type == TT.SLASH:
+            check_number_operands(expr.operator, left, right)
             return left / right
 
         if token_type == TT.STAR:
+            check_number_operands(expr.operator, left, right)
             return left * right
 
     def visit_grouping(self, expr: Grouping) -> Any:
@@ -78,6 +127,7 @@ class Interpreter(Visitor):
         token_type = expr.operator.type
 
         if token_type == TT.MINUS:
+            check_number_operand(expr.operator, right)
             return -right
 
         if token_type == TT.BANG:
@@ -85,3 +135,17 @@ class Interpreter(Visitor):
 
     def evaluate(self, expr: Expr) -> Any:
         return expr.accept(self)
+
+if __name__ == '__main__':
+    my_interpreter = Interpreter()
+    expression = my_interpreter.evaluate(
+        Binary(
+            Literal('oh no'),
+            token.Token(TT.EQUAL_EQUAL, '==', None, 1),
+            Unary(
+                token.Token(TT.MINUS, '-', None, 1),
+                Literal(False)
+            )
+        )
+    )
+    print(expression)
