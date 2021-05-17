@@ -110,10 +110,9 @@ class Interpreter(Visitor):
 
         if token_type == TT.SLASH:
             check_number_operands(expr.operator, left, right)
-            return left / right
 
             if right == 0:
-                raise errors.RuntimeError(
+                raise plox.error.RuntimeError(
                     expr.operator,
                     'Division by zero.'
                 )
