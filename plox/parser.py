@@ -8,7 +8,7 @@ from plox.expressions import (
     Unary
 )
 
-import plox.lox as lox
+import plox.error
 
 from plox.token import (
     Token,
@@ -20,7 +20,7 @@ class ParseError(Exception):
     pass
 
 def error(token: Token, message: str) -> ParseError:
-    lox.parse_error(token, message)
+    plox.error.parse_error(token, message)
     return ParseError()
 
 class Parser:
