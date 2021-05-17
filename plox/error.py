@@ -1,11 +1,10 @@
 import builtins
 import sys
 
-import plox.interpreter
+import plox.token
 
 had_error = False
 had_runtime_error = False
-interpreter = plox.interpreter.Interpreter()
 
 class RuntimeError(builtins.RuntimeError):
     def __init__(self, token: plox.token.Token, message: str):

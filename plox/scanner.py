@@ -1,5 +1,4 @@
 import string
-from typing import List
 
 import plox.error as error
 

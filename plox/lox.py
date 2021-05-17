@@ -7,8 +7,11 @@ import plox.parser
 import plox.scanner
 import plox.token
 
+interpreter = plox.interpreter.Interpreter()
+
 def lox() -> None:
     # sys.argv[0] is the script name, which we drop.
+
     args = sys.argv[1:]
 
     if len(args) > 1:
@@ -43,16 +46,9 @@ def run(source: str) -> None:
     parser = plox.parser.Parser(tokens)
     expression = parser.parse()
 
-    # TODO: The scanner discards unexpected tokens, and we parse the source
-    # without these tokens. So why bail out over a scanner error if the parser
-    # succeeds? Why group scanner and parser errors together?
-
     if plox.error.had_error: return
 
-    printer = plox.ast_printer.AstPrinter()
-
-    if expression is not None:
-        print(printer.print(expression))
+    if expression is not None: interpreter.interpret(expression)
 
 if __name__ == '__main__':
     lox()
