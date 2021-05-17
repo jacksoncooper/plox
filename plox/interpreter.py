@@ -1,5 +1,7 @@
 from typing import Any
 
+import plox.error
+
 from plox.expressions import (
     Binary,
     Expr,
@@ -9,7 +11,6 @@ from plox.expressions import (
     Visitor
 )
 
-import plox.error
 import plox.token as token
 from plox.token import Token, TokenType as TT
 
@@ -109,6 +110,14 @@ class Interpreter(Visitor):
 
         if token_type == TT.SLASH:
             check_number_operands(expr.operator, left, right)
+            return left / right
+
+            if right == 0:
+                raise errors.RuntimeError(
+                    expr.operator,
+                    'Division by zero.'
+                )
+
             return left / right
 
         if token_type == TT.STAR:

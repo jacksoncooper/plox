@@ -1,5 +1,7 @@
 from typing import Optional
 
+import plox.error
+
 from plox.expressions import (
     Binary,
     Expr,
@@ -7,8 +9,6 @@ from plox.expressions import (
     Literal,
     Unary
 )
-
-import plox.error
 
 from plox.token import (
     Token,
