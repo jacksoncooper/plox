@@ -1,11 +1,7 @@
-# Project files.
+.DS_Store
 
 /.vscode
 
-# Python files.
+**/__pycache__/
 
-**/__pycache__
-
-# Library files.
-
-**/.mypy_cache
+**/.mypy_cache/
